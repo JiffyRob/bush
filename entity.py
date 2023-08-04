@@ -68,10 +68,8 @@ class Actor(Entity):
         super().__init__(pos, surface, groups, id, layer, topleft=topleft)
         self.velocity = pygame.Vector2()
 
-    def update(self, dt):
-        self.pos += self.velocity * dt
+    def update_rects(self):
         self.rect.center = self.pos
-
     def pos_after_limiting(self, map_rect):
         pos = self.pos.copy()
         difference = max(map_rect.top - self.rect.top, 0)
@@ -90,5 +88,6 @@ class Actor(Entity):
         for i in range(1):
             if old_pos[i] != new_pos[i]:
                 self.velocity[i] = 0
-        self.rect.center = self.pos = new_pos
+        self.pos = new_pos
+        self.update_rects()
         return new_pos == old_pos
