@@ -49,31 +49,49 @@ def dynamic_update(self, dt, stop_on_collision=False):
     checked_velocity = pygame.Vector2()
     sprite_velocity = self.velocity.copy() * dt
     callbacks = (static_collision, dynamic_collision, trigger_collision)
-    while checked_velocity != sprite_velocity:
+    ran = False
+    while not ran and checked_velocity != sprite_velocity:
+        ran = True
         checked_velocity.move_towards_ip(sprite_velocity, MAX_SPEED)
         self.pos += checked_velocity
         self.update_rects()
         for sprite in self.physics_data.collision_group:
-            callbacks[sprite.physics_data.type](self, sprite, stop_on_collision)
+            callbacks[sprite.physics_data.type](self, sprite, dt, stop_on_collision)
 
 
-def static_collision(dynamic, static, stop_on_collision):
+def static_collision(dynamic, static, dt, stop_on_collision):
     searcher = util.search(dynamic.pos)
+    collided = False
     while collision.collide_rect_mask(
         dynamic.collision_rect, static.mask, static.rect.topleft
     ):
         dynamic.pos = pygame.Vector2(next(searcher))
         dynamic.update_rects()
+        collided = True
+    if collided and stop_on_collision:
+        dynamic.velocity *= 0
+    if collided and hasattr(dynamic, "on_collision"):
+        dynamic.on_collision(static, dt)
+    if collided and hasattr(static, "on_collision"):
+        static.on_collision(dynamic, dt)
+    return collided
 
 
-def dynamic_collision(dynamic1, dynamic2, stop_on_collision):
-    # TODO
-    pass
+def dynamic_collision(dynamic1, dynamic2, dt, stop_on_collision):
+    if dynamic1.collision_rect.colliderect(dynamic2.collision_rect):
+        if hasattr(dynamic1, "on_collision"):
+            print("callback", dynamic1, dynamic2)
+            dynamic1.on_collision(dynamic2, dt)
+        if hasattr(dynamic2, "on_collision"):
+            print("callback", dynamic2, dynamic1)
+            dynamic2.on_collision(dynamic1, dt)
 
 
-def trigger_collision(dynamic, trigger, stop_on_collision):
-    # TODO
+def trigger_collision(dynamic, trigger, dt, stop_on_collision):
     if collision.collide_rect_mask(
-        dynamic.collision_rect.move(-trigger.rect.left, -trigger.rect.top), trigger.mask
+        dynamic.collision_rect, trigger.mask, trigger.rect.topleft
     ):
-        trigger.on_collision(dynamic)
+        if hasattr(dynamic, "on_collision"):
+            dynamic.on_collision(trigger, dt)
+        if hasattr(trigger, "on_collision"):
+            trigger.on_collision(dynamic, dt)
