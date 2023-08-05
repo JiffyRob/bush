@@ -49,25 +49,34 @@ def dynamic_update(self, dt, stop_on_collision=False):
     checked_velocity = pygame.Vector2()
     sprite_velocity = self.velocity.copy() * dt
     callbacks = (static_collision, dynamic_collision, trigger_collision)
-    ran = False
-    while not ran and checked_velocity != sprite_velocity:
-        ran = True
+    for sprite in self.physics_data.collision_group:
+        if sprite is self:
+            continue
+        callbacks[sprite.physics_data.type](self, sprite, dt, stop_on_collision)
+    while checked_velocity != sprite_velocity:
         checked_velocity.move_towards_ip(sprite_velocity, MAX_SPEED)
         self.pos += checked_velocity
         self.update_rects()
         for sprite in self.physics_data.collision_group:
+            if sprite is self:
+                continue
             callbacks[sprite.physics_data.type](self, sprite, dt, stop_on_collision)
 
 
-def static_collision(dynamic, static, dt, stop_on_collision):
-    searcher = util.search(dynamic.pos)
+def resolve_collision(to_move, to_resolve):
+    searcher = util.search(to_move.pos)
     collided = False
     while collision.collide_rect_mask(
-        dynamic.collision_rect, static.mask, static.rect.topleft
+        to_move.collision_rect, to_resolve.mask, to_resolve.rect.topleft
     ):
-        dynamic.pos = pygame.Vector2(next(searcher))
-        dynamic.update_rects()
+        to_move.pos = pygame.Vector2(next(searcher))
+        to_move.update_rects()
         collided = True
+    return collided
+
+
+def static_collision(dynamic, static, dt, stop_on_collision):
+    collided = resolve_collision(dynamic, static)
     if collided and stop_on_collision:
         dynamic.velocity *= 0
     if collided and hasattr(dynamic, "on_collision"):
