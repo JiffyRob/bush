@@ -81,6 +81,9 @@ class AssetHandler:
     def set_global_home(cls, path):
         cls.base = path
 
+    def join(self, path):
+        return os.path.join(self.base, path)
+
     def load(self, filepath, cache=True, loader=None, **kwargs):
         filepath = os.path.join(self.base, filepath)
         # get file extension
