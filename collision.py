@@ -22,3 +22,7 @@ def collides(thing1, thing2):
         (pygame.Rect, pygame.Mask): collide_mask,
     }
     return bool(type_dict[type(thing1), type(thing2)](thing1, thing2))
+
+
+def collision_rect_collide(spr1, spr2):
+    return spr1.collision_rect.colliderect(spr2.collision_rect)
