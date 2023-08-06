@@ -70,6 +70,7 @@ class Actor(Entity):
 
     def update_rects(self):
         self.rect.center = self.pos
+
     def pos_after_limiting(self, map_rect):
         pos = self.pos.copy()
         difference = max(map_rect.top - self.rect.top, 0)
