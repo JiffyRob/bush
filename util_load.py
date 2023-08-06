@@ -102,14 +102,17 @@ def save_json(data, path):
         json.dump(data, file)
 
 
-def load_csv(path, delimiter=",", quotechar='"', escapechar=""):
+def load_csv(path, delimiter=",", quotechar='"', escapechar="\\", flatten=False):
     grid = []
     with open(join(path)) as file:
         reader = csv.reader(
             file, delimiter=delimiter, quotechar=quotechar, escapechar=escapechar
         )
         for row in reader:
-            grid.append(row)
+            if flatten:
+                grid.extend(row)
+            else:
+                grid.append(row)
     return grid
 
 
