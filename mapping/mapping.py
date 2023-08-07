@@ -28,8 +28,8 @@ Layer = namedtuple(
 )
 Tile = namedtuple(
     "Tile",
-    ["layer", "pos", "image", "properties", "type"],
-    defaults=[0, pygame.Vector2(), pygame.Surface((0, 0)), {}, "tile"],
+    ["layer", "pos", "image", "properties", "type", "gid"],
+    defaults=[0, pygame.Vector2(), pygame.Surface((0, 0)), {}, "tile", 0],
 )
 Image = namedtuple(
     "Image",
@@ -74,6 +74,7 @@ class MapLoader:
         self.tile_handler = tile_handler
         self.colorkey = colorkey
         self.current_registry = None
+        self.animation_cache = {}
 
     def parse(self, map):
         def get_anim(tmx_map, gid):
@@ -96,6 +97,7 @@ class MapLoader:
                     pygame.Vector2(x * map.tilewidth, y * map.tilewidth),
                     get_anim(tmx_map, gid),
                     map.get_tile_properties_by_gid(gid) or {},
+                    gid,
                 )
 
         def image_generator(tmx_map, layer_index):
@@ -186,14 +188,12 @@ class MapLoader:
                     try:
                         surface.blit(tile.image, tile.pos)
                     except TypeError:
-                        self.current_registry.get_group("main").add(
-                            entity.Entity(
-                                tile.pos,
-                                tile.image,
-                                layer=layer.layer * 3 + 1,
-                                topleft=True,
-                            )
-                        )
+                        key = (tile.layer, tile.gid)
+                        if tile.image is not None:
+                            if key in self.animation_cache:
+                                self.animation_cache[key].append(tile)
+                            else:
+                                self.animation_cache[key] = [tile]
 
                 sprite = entity.Entity(
                     (0, 0), surface, layer=layer.layer * 3 + 1, topleft=True
@@ -208,6 +208,38 @@ class MapLoader:
             if layer.type == LAYERTYPE_OBJECT:
                 for obj in layer.items:
                     self.sprite_creator(obj, self.current_registry.get_group("main"))
+        for key, tiles in self.animation_cache.items():
+            if len(tiles) > (map.width * map.height / 10):
+                frames, durations, mirror_x, mirror_y = tiles[0].image.input_values()
+                output_frames = [
+                    pygame.Surface(map_size, pygame.SRCALPHA).convert_alpha()
+                    for _ in frames
+                ]
+                anim_type = type(tiles[0].image)
+                for tile in tiles:
+                    for frame, output_frame in zip(frames, output_frames):
+                        output_frame.blit(frame, tile.pos)
+                self.current_registry.get_group("main").add(
+                    entity.Entity(
+                        (0, 0),
+                        anim_type(
+                            output_frames,
+                            durations,
+                            mirror_x,
+                            mirror_y,
+                        ),
+                        layer=key[0] * 3 + 1,
+                        topleft=True,
+                    )
+                )
+            else:
+                for tile in tiles:
+                    self.current_registry.get_group("main").add(
+                        entity.Entity(
+                            tile.pos, tile.image, layer=tile.layer * 3 + 1, topleft=True
+                        )
+                    )
+        self.animation_cache = {}
         if self.cache_maps:
             self.cache[filepath] = (
                 self.current_registry,

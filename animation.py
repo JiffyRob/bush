@@ -14,6 +14,8 @@ class Animation:
         ]
         self.index = 0
         self.last_start_time = 0
+        self.mirror_x = mirror_x
+        self.mirror_y = mirror_y
 
     def __len__(self):
         return len(self.images)
@@ -38,6 +40,9 @@ class Animation:
 
     def done(self):
         return False
+
+    def input_values(self):
+        return self.images, self.lengths, self.mirror_x, self.mirror_y
 
 
 class PingPongAnimation(Animation):
