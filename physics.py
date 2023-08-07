@@ -38,7 +38,7 @@ def optimize_for_physics(group):
             megamask.draw(sprite.mask, sprite.rect.topleft)
             group.remove(sprite)
         new_sprite = pygame.sprite.Sprite()
-        new_sprite.rect = megamask.get_rect()
+        new_sprite.rect = pygame.Rect(megamask.get_rect())
         new_sprite.pos = new_sprite.rect.center
         new_sprite.mask = megamask
         new_sprite.physics_data = PhysicsData(key, group)
@@ -89,10 +89,8 @@ def static_collision(dynamic, static, dt, stop_on_collision):
 def dynamic_collision(dynamic1, dynamic2, dt, stop_on_collision):
     if dynamic1.collision_rect.colliderect(dynamic2.collision_rect):
         if hasattr(dynamic1, "on_collision"):
-            print("callback", dynamic1, dynamic2)
             dynamic1.on_collision(dynamic2, dt)
         if hasattr(dynamic2, "on_collision"):
-            print("callback", dynamic2, dynamic1)
             dynamic2.on_collision(dynamic1, dt)
 
 

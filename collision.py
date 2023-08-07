@@ -17,9 +17,13 @@ def collide_rect_mask(rect, mask, mask_pos=(0, 0)):
 def collides(thing1, thing2):
     type_dict = {
         (pygame.Rect, pygame.Rect): collide_rect,
+        (pygame.FRect, pygame.FRect): collide_rect,
+        (pygame.FRect, pygame.Rect): collide_rect,
         (pygame.Mask, pygame.Mask): collide_mask,
         (pygame.Mask, pygame.Rect): lambda a, b: collide_rect_mask(b, a),
-        (pygame.Rect, pygame.Mask): collide_mask,
+        (pygame.Mask, pygame.FRect): lambda a, b: collide_rect_mask(b, a),
+        (pygame.Rect, pygame.Mask): collide_rect_mask,
+        (pygame.Mask, pygame.FRect): collide_rect_mask,
     }
     return bool(type_dict[type(thing1), type(thing2)](thing1, thing2))
 
