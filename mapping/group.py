@@ -82,14 +82,25 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
                 updated.append(sprite)
         return updated
 
-    def draw(self, surface, offset=(0, 0)):
-        self.visible_rect = self.cam_rect.inflate(
-            self.border_overshoot * 2, self.border_overshoot * 2
-        )
+    def update_rects(self):
         if self.follow is not None:
             self.cam_rect.center = self.follow.pos
             self.limit()
             self.limit_sprites()
+        self.visible_rect = self.cam_rect.inflate(
+            self.border_overshoot * 2, self.border_overshoot * 2
+        )
+
+    def world_to_screen(self, pos):
+        self.update_rects()
+        return pygame.Vector2(pos) - self.cam_rect.topleft
+
+    def screen_to_world(self, pos):
+        self.update_rects()
+        return pygame.Vector2(pos) + self.cam_rect.topleft
+
+    def draw(self, surface, offset=(0, 0)):
+        self.update_rects()
         offset = pygame.Vector2(self.cam_rect.topleft) - offset
         surface.fblits(
             [

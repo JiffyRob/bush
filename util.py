@@ -224,8 +224,12 @@ def repeat(image, size, offset=(0, 0), alpha=False):
     new_surface.fblits(
         [
             (image, (x, y))
-            for x in range(offset[0] - image_size[0], size[0], image_size[0])
-            for y in range(offset[1] - image_size[1], size[1], image_size[1])
+            for x in range(
+                round(offset[0] - image_size[0]), round(size[0]), image_size[0]
+            )
+            for y in range(
+                round(offset[1] - image_size[1]), round(size[1]), image_size[1]
+            )
         ]
     )
     return new_surface

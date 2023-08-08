@@ -4,7 +4,7 @@ from bush import util
 
 
 class LoopedSurface(pygame.sprite.Sprite):
-    def __init__(self, surface, scroll_factor, size, alpha=False):
+    def __init__(self, surface, scroll_factor, size, alpha=False, layer=None):
         self.surface = surface
         self.is_anim = not isinstance(self.surface, pygame.Surface)
         self.size = size
@@ -23,3 +23,6 @@ class LoopedSurface(pygame.sprite.Sprite):
     @property
     def rect(self):
         return pygame.FRect(self.pos, self.size)
+
+    def limit(self, *args, **kwargs):
+        pass

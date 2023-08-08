@@ -9,6 +9,9 @@ class MaskRegistry(dict):
             raise TypeError("MaskRegistry only accepts pygame.Mask objects")
         super().__setitem__(key, value)
 
+    def __missing__(self, key):
+        print(f"WARNING: Unable to find '{key}'")
+
     def collides(self, thing, *keys):
         for key in keys:
             if collision.collides(self[key], thing):
@@ -30,6 +33,9 @@ class RectListRegistry(dict):
         if not isinstance(value, (list, tuple, set)):
             raise TypeError("RectListRegistry only takes sequences")
         super().__setitem__(key, value)
+
+    def __missing__(self, key):
+        print(f"WARNING: Unable to find '{key}'")
 
     def collides(self, thing, *keys):
         for key in keys:
@@ -54,6 +60,9 @@ class GroupRegistry(dict):
         if not isinstance(value, pygame.sprite.AbstractGroup):
             raise TypeError("GroupRegistry only takes pygame sprite groups")
         super().__setitem__(key, value)
+
+    def __missing__(self, key):
+        print(f"WARNING: Unable to find '{key}'")
 
     def collides(self, thing, *keys):
         for key in keys:
@@ -82,14 +91,14 @@ class MapRegistry:
     def add_rect_list(self, key, rect_list):
         self.rect_lists[key] = rect_list
 
-    def get_group(self, key, fallback=None):
-        return self.groups.get(key, fallback)
+    def get_group(self, key):
+        return self.groups[key]
 
-    def get_mask(self, key, fallback=None):
-        return self.masks.get(key, fallback)
+    def get_mask(self, key):
+        return self.masks[key]
 
-    def get_rect_list(self, key, fallback=None):
-        return self.rect_lists.get(key, fallback)
+    def get_rect_list(self, key):
+        return self.rect_lists[key]
 
     def list_groups(self):
         return list(self.groups.keys())
