@@ -1,8 +1,8 @@
 from collections import namedtuple
 
 import pygame
-
 import pytmx
+
 from bush import animation, asset_handler, entity, util
 from bush.mapping import registry
 
@@ -43,6 +43,19 @@ Object = namedtuple(
 )
 
 
+def get_anim(tmx_map, gid):
+    props = tmx_map.get_tile_properties_by_gid(gid)
+    anim = tmx_map.get_tile_image_by_gid(gid)
+    if props is not None and props["frames"]:
+        frames = []
+        durations = []
+        for frame in props["frames"]:
+            frames.append(tmx_map.get_tile_image_by_gid(frame.gid))
+            durations.append(frame.duration)
+        anim = animation.Animation(frames, durations)
+    return anim
+
+
 class MapLoader:
     def __init__(
         self,
@@ -77,18 +90,6 @@ class MapLoader:
         self.animation_cache = {}
 
     def parse(self, map):
-        def get_anim(tmx_map, gid):
-            props = tmx_map.get_tile_properties_by_gid(gid)
-            anim = tmx_map.get_tile_image_by_gid(gid)
-            if props is not None and props["frames"]:
-                frames = []
-                durations = []
-                for frame in props["frames"]:
-                    frames.append(tmx_map.get_tile_image_by_gid(frame.gid))
-                    durations.append(frame.duration)
-                anim = animation.Animation(frames, durations)
-            return anim
-
         def tile_generator(tmx_map, layer_index):
             layer = tmx_map.layers[layer_index]
             for x, y, gid in layer.iter_data():

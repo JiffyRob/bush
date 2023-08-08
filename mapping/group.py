@@ -91,10 +91,13 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
             self.limit()
             self.limit_sprites()
         offset = pygame.Vector2(self.cam_rect.topleft) - offset
-        for sprite in self.sprites():
-            if self.is_visible(sprite) or self.update_all:
-                pos = pygame.Vector2(sprite.rect.topleft) - offset
-                surface.blit(sprite.image, pos)
+        surface.fblits(
+            [
+                (sprite.image, (sprite.rect.topleft - offset))
+                for sprite in self.sprites()
+                if self.is_visible(sprite) or self.update_all
+            ]
+        )
         if self.debug_physics:
             for sprite in self.sprites():
                 if not sprite.no_debug and (self.is_visible(sprite) or self.update_all):

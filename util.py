@@ -211,7 +211,7 @@ def randinrect(rect):
     )
 
 
-def repeat(image, size, alpha=False):
+def repeat(image, size, offset=(0, 0), alpha=False):
     if alpha:
         new_surface = pygame.Surface(size, pygame.SRCALPHA).convert_alpha()
     else:
@@ -220,7 +220,12 @@ def repeat(image, size, alpha=False):
         if colorkey is not None:
             new_surface.set_colorkey(colorkey)
     image_size = image.get_size()
-    for x in range(0, size[0], image_size[0]):
-        for y in range(0, size[1], image_size[1]):
-            new_surface.blit(image, (x, y))
+    offset = (offset[0] % image_size[0], offset[1] % image_size[1])
+    new_surface.fblits(
+        [
+            (image, (x, y))
+            for x in range(offset[0] - image_size[0], size[0], image_size[0])
+            for y in range(offset[1] - image_size[1], size[1], image_size[1])
+        ]
+    )
     return new_surface
