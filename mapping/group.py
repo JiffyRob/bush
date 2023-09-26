@@ -70,17 +70,14 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         return False
 
     def update(self, *args, **kwargs):
+        if self.update_all:
+            return super().update(*args, **kwargs)
         self.visible_rect = self.cam_rect.inflate(
             self.border_overshoot * 2, self.border_overshoot * 2
         )
-        if self.update_all:
-            return super().update(*args, **kwargs)
-        updated = []
         for sprite in self.sprites():
             if self.is_visible(sprite):
                 sprite.update(*args, **kwargs)
-                updated.append(sprite)
-        return updated
 
     def update_rects(self):
         if self.follow is not None:
@@ -104,9 +101,9 @@ class CameraGroup(pygame.sprite.LayeredUpdates):
         offset = pygame.Vector2(self.cam_rect.topleft) - offset
         surface.fblits(
             [
-                (sprite.image, (sprite.rect.topleft - offset))
+                (sprite.image, (sprite.rect.topleft - offset) + (0, -sprite.pos3.z))
                 for sprite in self.sprites()
-                if self.is_visible(sprite) or self.update_all
+                if (self.is_visible(sprite) or self.update_all) and sprite.drawable
             ]
         )
         if self.debug_physics:
