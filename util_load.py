@@ -5,7 +5,6 @@ import pickle
 import zlib
 
 import pygame
-
 import pytmx
 
 ENCODING = "UTF-8"

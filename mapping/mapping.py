@@ -3,6 +3,7 @@ from collections import namedtuple
 import pygame
 
 import pytmx
+
 from bush import animation, asset_handler, entity, util
 from bush.mapping import registry
 

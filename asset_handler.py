@@ -108,4 +108,5 @@ class AssetHandler:
         filetype = path.split(".")[-1]
         self._savers.get(filetype, "generic")(data, os.path.join(self.base, path))
 
+
 glob_loader = AssetHandler()

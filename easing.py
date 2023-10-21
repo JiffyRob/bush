@@ -1,9 +1,10 @@
 import math
 
-
 # implemnentations translated from easings.net
-def scale(start, stop, time):
-    return start + (time * (start - stop))
+
+
+def scale(start, end, time):
+    return start + (end - start) * time
 
 
 def linear(time):
@@ -23,7 +24,7 @@ def in_out_sine(time):
 
 
 def in_quad(time):
-    return time ** 2
+    return time**2
 
 
 def out_quad(time):
@@ -35,7 +36,7 @@ def in_out_quad(time):
 
 
 def in_cubic(time):
-    return time ** 3
+    return time**3
 
 
 def out_cubic(time):
@@ -47,7 +48,7 @@ def in_out_cubic(time):
 
 
 def in_quart(time):
-    time **= 4
+    return time**4
 
 
 def out_quart(time):
@@ -59,7 +60,7 @@ def in_out_quart(time):
 
 
 def in_quint(time):
-    return time ** 5
+    return time**5
 
 
 def out_quint(time):
@@ -84,6 +85,7 @@ def in_out_expo(time):
             return 2 ** (20 * time - 10) / 2
         else:
             return (2 - 2 ** (-20 * time + 10)) / 2
+    return time
 
 
 def in_circ(time):
@@ -131,6 +133,7 @@ def in_elastic(time):
 def out_elastic(time):
     if time not in {0, 1}:
         return -(2 ** (-10 * time)) * math.sin(time * 10 - 0.75) * (math.pi * 2 / 3) + 1
+    return time
 
 
 def in_out_elastic(time):
@@ -152,18 +155,18 @@ def out_bounce(time):
     if time < 1 / d1:
         return time**2 * n1
     elif time < 2 / d1:
-        time -= 1.5
-        return n1 * (time / d1) * time + 0.75
+        time -= 1.5 / d1
+        return n1 * time**2 + 0.75
     elif time < 2.5 / d1:
-        time -= 2.25
-        return n1 * (time / d1) * time + 0.9375
+        time -= 2.25 / d1
+        return n1 * time**2 + 0.9375
     else:
-        time -= 2.625
-        return n1 * (time / d1) * time + 0.984375
+        time -= 2.625 / d1
+        return n1 * time**2 + 0.984375
 
 
 def in_bounce(time):
-    return 1 - out_bounce(time)
+    return 1 - out_bounce(1 - time)
 
 
 def in_out_bounce(time):
