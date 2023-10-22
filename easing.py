@@ -1,8 +1,44 @@
 import math
 
+
+def create_exp_easings(exp):
+    def ease_in(time):
+        return time**exp
+
+    def ease_out(time):
+        return 1 - (1 - time) ** exp
+
+    def ease_in_out(time):
+        return (
+            2 ** (exp - 1) * time**exp
+            if time < 0.5
+            else 1 - (-2 * time + 2) ** exp / 2
+        )
+
+    return ease_in, ease_out, ease_in_out
+
+
+def reverse(easer):
+    def reverser(time):
+        return 1 - easer(time)
+
+    return reverser
+
+
+def combo(*easers):
+    count = len(easers)
+
+    def callback(time):
+        index, time = divmod(time * count, 1)
+        if index == count:
+            index -= 1
+            time += 1
+        return easers[int(index)](time)
+
+    return callback
+
+
 # implemnentations translated from easings.net
-
-
 def scale(start, end, time):
     return start + (end - start) * time
 
