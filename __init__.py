@@ -11,16 +11,21 @@ Distributed under MIT License
 """
 import pygame
 
+pygame.mixer.pre_init(44100, -16, 2, 512, "bush game", pygame.AUDIO_ALLOW_ANY_CHANGE)
 pygame.init()
 
 from bush import (
     ai,
     animation,
+    autotile,  # TODO: get rid of this
     asset_handler,
     collision,
-    color,
+    color,  # TODO: get rid of this
+    easing,
     entity,
     event_binding,
+    joy_cursor,
+    particle,
     mapping,
     physics,
     timer,
@@ -31,11 +36,15 @@ from bush import (
 __all__ = (
     ai,
     animation,
+    autotile,  # TODO: get rid of this
     asset_handler,
     collision,
-    color,
+    color,  # TODO: get rid of this
+    easing,
     entity,
     event_binding,
+    joy_cursor,
+    particle,
     mapping,
     physics,
     timer,
