@@ -11,7 +11,6 @@ Distributed under MIT License
 """
 import pygame
 
-pygame.mixer.pre_init(44100, -16, 2, 512, "bush game", pygame.AUDIO_ALLOW_ANY_CHANGE)
 pygame.init()
 
 from bush import (
