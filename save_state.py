@@ -25,7 +25,7 @@ class GameState:
 
     def save(self, file_path):
         self.save_hook(self)
-        self.loader.save(file_path, self.data)
+        self.loader.save(file_path, self.data, persist=True)
 
 
 class LeveledGameState:
@@ -71,4 +71,4 @@ class LeveledGameState:
         print(file_path)
         self.save_hook(self)
         file_path = file_path or self.save_path
-        self.loader.save(self.data, file_path)
+        self.loader.save(self.data, file_path, persist=True)

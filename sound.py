@@ -1,5 +1,7 @@
 import pygame
+
 from bush import asset_handler
+
 pygame.mixer.init()
 
 
@@ -81,5 +83,6 @@ class SoundManager:
             pygame.mixer.music.load(track)
             pygame.mixer.music.play(loops, start, fade_ms)
             self.current_track = track
+
 
 glob_player = SoundManager(asset_handler.glob_loader)

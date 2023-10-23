@@ -7,6 +7,8 @@ import zlib
 import pygame
 import pytmx
 
+from bush import util
+
 ENCODING = "UTF-8"
 
 join = os.path.join
@@ -150,16 +152,6 @@ def save_pickle(data, path):
         pickle.dump(data, file)
 
 
-def load_pickle_secure(path):
-    with open(join(path)) as file:
-        return json.loads(pickle.load(file))
-
-
-def save_pickle_secure(data, path):
-    with open(join(path), "w") as file:
-        pickle.dump(json.dumps(data), file)
-
-
 def load_map(path):
     return pytmx.load_pygame(path)
 
@@ -180,3 +172,13 @@ def load_world(path):
         )
         export_data[tmx_map.filename.split(".")[-2]] = rect, tmx_map
     return export_data
+
+
+if util.is_pygbag():
+    from platform import window
+
+    def load_persistent(name):
+        return window.localStorage.getItem(name)
+
+    def save_persistent(name, string_value):
+        return window.localStorage.setItem(name, string_value)

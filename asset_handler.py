@@ -1,7 +1,23 @@
+import asyncio
 import gc
 import os.path
 
 from bush.util_load import *
+from bush import util
+
+if util.is_pygbag():
+    loaded = load_persistent("files")
+    if loaded is None:
+        pass
+    else:
+        print(loaded)
+        filepaths = json.loads(loaded) or ()
+        print("Loading from persistent", filepaths)
+        for filepath in filepaths:
+            if not os.path.exists(filepath):
+                with open(filepath, "w") as file:
+                    file.write(load_persistent(filepath))
+    del loaded
 
 
 class AssetHandler:
@@ -40,6 +56,13 @@ class AssetHandler:
         "generic": save_text,
     }
 
+    _persisters = {
+        "txt": str,
+        "json": json.dumps,
+        "csv": save_csv,
+        "generic": str,
+    }
+
     _cache = {}
     base = ""
 
@@ -53,11 +76,13 @@ class AssetHandler:
             self.cache_folder()
 
     @classmethod
-    def register_filetype(cls, extension, loader=None, saver=None):
+    def register_filetype(cls, extension, loader=None, saver=None, persister=False):
         if loader:
             cls._loaders[extension] = loader
         if saver:
             cls._savers[extension] = saver
+        if persister:
+            cls._persisters[extension] = persister
 
     @classmethod
     def clear_cache(cls):
@@ -104,9 +129,20 @@ class AssetHandler:
         image = self.load(path)
         return make_spritesheet(image, size, margin, spacing)
 
-    def save(self, data, path):
+    def save(self, data, path, persist=False):
         filetype = path.split(".")[-1]
-        self._savers.get(filetype, "generic")(data, os.path.join(self.base, path))
+        filepath = os.path.join(self.base, path)
+        # if we are one web we can use persistant data
+        if persist and util.is_pygbag() and filetype in self._persisters:
+            save_persistent(filepath, self._persisters[filetype](data))
+            already_saved = json.loads(load_persistent("files"))
+            if filepath not in already_saved:
+                already_saved.append(filepath)
+                save_persistent(
+                    "files",
+                    json.dumps(already_saved),
+                )
+        self._savers.get(filetype, "generic")(data, filepath)
 
 
 glob_loader = AssetHandler()

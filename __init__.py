@@ -11,21 +11,19 @@ Distributed under MIT License
 """
 import pygame
 
-pygame.init()
-
+from bush import autotile  # TODO: get rid of this
+from bush import color  # TODO: get rid of this
 from bush import (
     ai,
     animation,
-    autotile,  # TODO: get rid of this
     asset_handler,
     collision,
-    color,  # TODO: get rid of this
     easing,
     entity,
     event_binding,
     joy_cursor,
-    particle,
     mapping,
+    particle,
     physics,
     timer,
     util,
@@ -50,3 +48,5 @@ __all__ = (
     util,
     util_load,
 )
+
+pygame.init()
