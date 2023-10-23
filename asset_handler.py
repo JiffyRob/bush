@@ -8,7 +8,7 @@ from bush import util
 if util.is_pygbag():
     loaded = load_persistent("files")
     if loaded is None:
-        pass
+        save_persistent("files", "[]")
     else:
         print(loaded)
         filepaths = json.loads(loaded) or ()
@@ -98,6 +98,17 @@ class AssetHandler:
                     file_path = join(dirpath, filename)
                     file_path = os.path.relpath(file_path, self.base)
                     self.load(file_path)
+
+    async def cache_folder_async(self, path=None):
+        if path is None:
+            path = self.base
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                if filename.split(".")[-1] in self._loaders:
+                    file_path = join(dirpath, filename)
+                    file_path = os.path.relpath(file_path, self.base)
+                    self.load(file_path)
+            await asyncio.sleep(0)
 
     def set_home(self, path):
         self.base = os.path.join(path)
