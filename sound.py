@@ -1,8 +1,10 @@
+import logging
 import pygame
 
 from bush import asset_handler
 
 pygame.mixer.init()
+logger = logging.getLogger(__name__)
 
 
 class ChannelRack:
@@ -19,17 +21,17 @@ class ChannelRack:
     def allocate_channel(self, priority):
         self.free_done()
         if self._free_channels:
-            print("using a free channel")
             channel = self._free_channels.pop(-1)
+            logger.debug(f"allocating free channel {channel}")
             self._used_channels.append([priority, channel])
         else:
             channel_data = self._get_least_priority()
             least_priority, channel = channel_data
             if priority > least_priority:
-                print("overriding a low priority channel")
+                logger.debug(f"Priority {priority} overrides priority {least_priority}.  Taking over channel.")
                 channel.stop()
                 channel_data[0] = priority
-        print(self._free_channels, self._used_channels)
+        logger.debug(f"{len(self._free_channels)} free after allocation")
         return channel
 
     def free_done(self):
@@ -75,14 +77,17 @@ class SoundManager:
     def get_music_volume(self, value):
         return self.music_volume
 
-    def switch_track(self, track, volume=1, loops=0, start=0.0, fade_ms=0):
+    def switch_track(self, track, volume=1, loops=-1, start=0.0, fade_ms=0):
         track = self.loader.join(track)
+        logger.debug(f"playing {track}")
         if track != self.current_track:
             pygame.mixer.music.set_volume(self.music_volume * volume)
             pygame.mixer.music.stop()
             pygame.mixer.music.load(track)
             pygame.mixer.music.play(loops, start, fade_ms)
             self.current_track = track
+        else:
+            logger.debug("track is already playing")
 
 
 glob_player = SoundManager(asset_handler.glob_loader)

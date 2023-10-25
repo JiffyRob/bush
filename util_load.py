@@ -3,6 +3,7 @@ import json
 import os
 import pickle
 import zlib
+import logging
 
 import pygame
 import pytmx
@@ -12,6 +13,7 @@ from bush import util
 ENCODING = "UTF-8"
 
 join = os.path.join
+logger = logging.getLogger(__name__)
 
 
 def load_image(path):
@@ -42,7 +44,7 @@ def make_spritesheet(spritesheet, frame_size, margin=(0, 0), spacing=0):
     # will raise an error if there is no screen to optimize for
     # ignore it
     except pygame.error:
-        print("alpha conversion not possible")
+        logger.info("alpha conversion not possible")
     # creation of variables
     surf_list = []
     width, height = spritesheet.get_size()
@@ -174,7 +176,16 @@ def load_world(path):
     return export_data
 
 
+def load_persistent(name):
+    logger.warning(f"Cannot load {name} from local storage")
+
+
+def save_persistent(name, string_value):
+    logger.warning(f"Cannot save {name} to local storage")
+
+
 if util.is_pygbag():
+    logger.info("Pygbag detected.  Enabling local storage functions")
     from platform import window
 
     def load_persistent(name):

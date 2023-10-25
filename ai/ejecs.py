@@ -1,9 +1,12 @@
 import pygame
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
     from bush import event_binding
 except ImportError:
-    print("WARNING: event bindings not found.  InputController object set to None")
+    logger.warning("Event binding library not found.  Input control will not work.")
     event_binding = None
 
 
@@ -107,7 +110,7 @@ class EJECSController:
 
     def run(self):
         if self.current_index >= len(self.script):
-            print("Script complete")
+            logger.debug("Script complete")
             return False
         output = next(self.current_process)
         if self.current_index < 0:

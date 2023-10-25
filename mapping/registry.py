@@ -1,6 +1,10 @@
+import logging
+
 import pygame
 
 from bush import collision
+
+logger = logging.getLogger(__name__)
 
 
 class MaskRegistry(dict):
@@ -10,7 +14,7 @@ class MaskRegistry(dict):
         super().__setitem__(key, value)
 
     def __missing__(self, key):
-        print(f"WARNING: Unable to find '{key}'")
+        logger.warning(f"Unable to find '{key}'")
 
     def collides(self, thing, *keys):
         for key in keys:
@@ -35,7 +39,7 @@ class RectListRegistry(dict):
         super().__setitem__(key, value)
 
     def __missing__(self, key):
-        print(f"WARNING: Unable to find '{key}'")
+        logger.warning(f"WARNING: Unable to find '{key}'")
 
     def collides(self, thing, *keys):
         for key in keys:
@@ -62,7 +66,7 @@ class GroupRegistry(dict):
         super().__setitem__(key, value)
 
     def __missing__(self, key):
-        print(f"WARNING: Unable to find '{key}'")
+        logger.warning(f"WARNING: Unable to find '{key}'")
 
     def collides(self, thing, *keys):
         for key in keys:

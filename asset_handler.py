@@ -10,13 +10,13 @@ if util.is_pygbag():
     if loaded is None:
         save_persistent("files", "[]")
     else:
-        print(loaded)
         filepaths = json.loads(loaded) or ()
-        print("Loading from persistent", filepaths)
+        logger.debug("Loading {loaded} from persistent data")
         for filepath in filepaths:
             if not os.path.exists(filepath):
                 with open(filepath, "w") as file:
                     file.write(load_persistent(filepath))
+        del filepath, filepaths, file
     del loaded
 
 
@@ -128,7 +128,7 @@ class AssetHandler:
         if filepath in self._cache:
             return self._cache[filepath]
         # load file
-        # print("loading", filepath)
+        logger.debug(f"loading {filepath}")
         loader = loader or self._loaders.get(filetype, load_text)
         result = loader(filepath, **kwargs)
         # add to cache if needed

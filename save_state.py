@@ -68,7 +68,6 @@ class LeveledGameState:
         self.load_hook(self)
 
     def save(self, file_path=None):
-        print(file_path)
         self.save_hook(self)
         file_path = file_path or self.save_path
         self.loader.save(self.data, file_path, persist=True)
