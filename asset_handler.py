@@ -2,8 +2,8 @@ import asyncio
 import gc
 import os.path
 
-from bush.util_load import *
 from bush import util
+from bush.util_load import *
 
 if util.is_pygbag():
     loaded = load_persistent("files")

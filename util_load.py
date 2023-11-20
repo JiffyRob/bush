@@ -1,13 +1,13 @@
 import csv
 import json
+import logging
 import os
 import pickle
 import zlib
-import logging
 
 import pygame
-import pytmx
 
+import pytmx
 from bush import util
 
 ENCODING = "UTF-8"

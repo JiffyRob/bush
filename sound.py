@@ -1,4 +1,5 @@
 import logging
+
 import pygame
 
 from bush import asset_handler
@@ -28,7 +29,9 @@ class ChannelRack:
             channel_data = self._get_least_priority()
             least_priority, channel = channel_data
             if priority > least_priority:
-                logger.debug(f"Priority {priority} overrides priority {least_priority}.  Taking over channel.")
+                logger.debug(
+                    f"Priority {priority} overrides priority {least_priority}.  Taking over channel."
+                )
                 channel.stop()
                 channel_data[0] = priority
         logger.debug(f"{len(self._free_channels)} free after allocation")
@@ -77,7 +80,9 @@ class SoundManager:
     def get_music_volume(self, value):
         return self.music_volume
 
-    def switch_track(self, track, volume=1, loops=-1, start=0.0, fade_ms=0):
+    def switch_track(self, track=None, volume=1, loops=-1, start=0.0, fade_ms=0):
+        if track is None:
+            return
         track = self.loader.join(track)
         logger.debug(f"playing {track}")
         if track != self.current_track:
@@ -88,6 +93,9 @@ class SoundManager:
             self.current_track = track
         else:
             logger.debug("track is already playing")
+
+    def top_track(self):
+        pygame.mixer.music.stop()
 
 
 glob_player = SoundManager(asset_handler.glob_loader)

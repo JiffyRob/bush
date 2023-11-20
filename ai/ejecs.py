@@ -1,5 +1,6 @@
-import pygame
 import logging
+
+import pygame
 
 logger = logging.getLogger(__name__)
 
